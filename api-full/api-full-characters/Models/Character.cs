@@ -6,6 +6,6 @@
 
         public required string Name { get; set; }
 
-        public required string Origin { get; set; }
+        public required Guid PlanetOrigin { get; set; }
     }
 }
