@@ -7,7 +7,7 @@ const CharactersTableColumns: ColumnDef<Character>[] = [
         header: 'Name'
     },
     {
-        accessorKey: 'origin',
+        accessorKey: 'planetOrigin',
         header: 'Origin'
     }
 ]
