@@ -1,9 +1,9 @@
 import { DataTable } from "@/app/components/dataTable";
-import { Character } from "../lib/charactersSchema";
 import CharactersTableColumns from "./charactersTableColumns";
+import { CharacterDto } from "../lib/characterDto";
 
 interface CharacterTableProps {
-    characters: Character[]
+    characters: CharacterDto[]
 }
 
 export default function CharacterTable(props: CharacterTableProps) {

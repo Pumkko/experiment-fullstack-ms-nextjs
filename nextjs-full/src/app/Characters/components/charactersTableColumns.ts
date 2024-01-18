@@ -1,13 +1,13 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Character } from "../lib/charactersSchema";
+import { CharacterDto } from "../lib/characterDto";
 
-const CharactersTableColumns: ColumnDef<Character>[] = [
+const CharactersTableColumns: ColumnDef<CharacterDto>[] = [
     {
         accessorKey: 'name',
         header: 'Name'
     },
     {
-        accessorKey: 'planetOrigin',
+        accessorKey: 'planet',
         header: 'Origin'
     }
 ]

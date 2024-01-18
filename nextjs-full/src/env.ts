@@ -1,13 +1,15 @@
 import * as v from 'valibot'
 
 const envSchema = v.object({
-    API_URL: v.nonNullish(v.string([v.url()]))
+    CHARACTERS_API_URL_ROOT: v.nonNullish(v.string([v.url()])),
+    PLANETS_API_URL_ROOT: v.nonNullish(v.string([v.url()])),
 })
 
 console.log('validating');
 
 const env = v.safeParse(envSchema, {
-    API_URL: process.env.API_URL
+    CHARACTERS_API_URL_ROOT: process.env.CHARACTERS_API_URL_ROOT,
+    PLANETS_API_URL_ROOT: process.env.PLANETS_API_URL_ROOT
 });
 
 if (!env.success) {
