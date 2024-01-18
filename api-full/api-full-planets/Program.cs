@@ -1,4 +1,5 @@
 using api_full_planets;
+using EntityGraphQL.AspNet;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<PlanetContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("PlanetDb")));
+
+builder.Services.AddGraphQLSchema<PlanetContext>();
 
 
 builder.Services.AddControllers();
@@ -23,8 +26,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
+
+app.MapGraphQL<PlanetContext>();
+
 
 app.MapControllers();
 
