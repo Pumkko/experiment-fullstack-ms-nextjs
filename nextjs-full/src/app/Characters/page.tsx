@@ -1,42 +1,30 @@
 import { Character, GetCharacterSchema } from './lib/charactersSchema';
 import CharacterTable from './components/charactersTable';
 import env from '@/env';
-import { getData } from './lib/getData';
 import { GetPlanetSchema, Planet } from './lib/planetsSchema';
 import { CharacterDto } from './lib/characterDto';
+import { getCharacters, getPlanets } from './lib/getData';
 
-async function getCharacters(): Promise<CharacterDto[]> {
-  const characters = getData(new URL('Characters', env.CHARACTERS_API_URL_ROOT), GetCharacterSchema);
-  const planets = getData(new URL('Planets', env.PLANETS_API_URL_ROOT), GetPlanetSchema);
+async function getCharactersData(): Promise<CharacterDto[]> {
+  const characters = await getCharacters();
+  const planets = await getPlanets();
 
-  const models = await Promise.allSettled([characters, planets]);
-  if (models.some(p => p.status === "rejected")) {
-    throw new Error("Failed to fetch characters or planets");
-  }
+  return characters.map<CharacterDto>(c => {
 
-  const successModels = models as [PromiseFulfilledResult<Character[]>, PromiseFulfilledResult<Planet[]>];
-
-  const characterDto: CharacterDto[] = [];
-
-  for (const character of successModels[0].value) {
-
-    const planet = successModels[1].value.find(p => p.id === character.planetOrigin);
+    const planet = planets.find(p => p.id === c.planetOrigin);
     if (!planet) {
-      throw new Error("Failed to match planet with planetId");
+      throw new Error(`Can't find planet for ${c.name}`);
     }
 
-    characterDto.push({
-      name: character.name,
+    return {
+      name: c.name,
       planet: planet.name
-    })
-
-  }
-
-  return characterDto;
+    }
+  })
 }
 
 export default async function Characters() {
-  const characters = await getCharacters();
+  const characters = await getCharactersData();
 
   return <CharacterTable characters={characters}></CharacterTable>
 } 

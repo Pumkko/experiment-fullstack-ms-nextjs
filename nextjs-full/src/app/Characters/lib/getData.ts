@@ -1,20 +1,60 @@
-import { BaseSchema, Output, safeParse } from "valibot";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import { safeParse } from "valibot";
+import { Character, GetCharacterSchema } from './charactersSchema'
+import env from "@/env";
+import { GetPlanetSchema, Planet } from "./planetsSchema";
 
-export async function getData<TSchema extends BaseSchema>(url: string | URL, schema: TSchema): Promise<Output<TSchema>> {
-    const res = await fetch(url);
-    if (!res.ok) {
-        // This will activate the closest `error.js` Error Boundary
-        throw new Error('Failed to fetch data')
-    }
+export async function getCharacters(): Promise<Character[]> {
+    const client = new ApolloClient({
+        uri: env.CHARACTERS_API_URL_ROOT,
+        cache: new InMemoryCache(),
+    });
 
-    const jsonResult = await res.json();
-
-    const result = safeParse(schema, jsonResult);
+    const graphQlResult = await client
+        .query({
+            query: gql`
+            query getCharacters {
+                characters {
+                    name,
+                    planetOrigin
+                }
+            }
+    `,
+        });
+        
+    const result = safeParse(GetCharacterSchema, graphQlResult.data);
 
     if (!result.success) {
-        throw new Error("Get Data returns an object that does not match the schema");
+        throw result.issues.map(i => i.message).join(',');
     }
 
-    return result.output;
+    return result.output.characters;
+}
 
+export async function getPlanets(): Promise<Planet[]> {
+    const client = new ApolloClient({
+        uri: env.PLANETS_API_URL_ROOT,
+        cache: new InMemoryCache(),
+    });
+
+    const graphQlResult = await client
+        .query({
+            query: gql`
+            query getPlanets {
+                planets{
+                 name,
+                     id
+               }
+             }
+    `,
+        });
+        
+
+    const result = safeParse(GetPlanetSchema, graphQlResult.data);
+
+    if (!result.success) {
+        throw result.issues.map(i => i.message).join(',');
+    }
+
+    return result.output.planets;
 }
